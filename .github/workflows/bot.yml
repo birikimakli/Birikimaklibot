@@ -1,13 +1,18 @@
 name: BirikimAkliBot
 
 on:
-  workflow_dispatch: # İstediğimiz zaman manuel çalıştırmak için
+  workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *' # Her 15 dakikada bir otomatik çalışması için
+    - cron: '*/15 * * * *'
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   run:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Botun hafıza dosyasını depoya geri yazabilmesi için kritik izin
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
