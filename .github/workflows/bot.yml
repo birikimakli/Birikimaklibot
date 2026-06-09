@@ -1,6 +1,10 @@
 name: BirikimAkliBot
+
 on:
-  workflow_dispatch:
+  workflow_dispatch: # İstediğimiz zaman manuel çalıştırmak için
+  schedule:
+    - cron: '*/15 * * * *' # Her 15 dakikada bir otomatik çalışması için
+
 jobs:
   run:
     runs-on: ubuntu-latest
