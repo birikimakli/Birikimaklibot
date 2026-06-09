@@ -10,35 +10,37 @@ def send_telegram_message(text):
     payload = {
         "chat_id": CHAT_ID,
         "text": text,
-        "parse_mode": "Markdown"  # Linklerin ve kalın yazıların güzel görünmesi için
+        "parse_mode": "Markdown"
     }
     response = requests.post(url, data={k: v for k, v in payload.items() if v is not None})
     return response.text
 
-def check_kap():
-    # KAP Resmi RSS Akışı
-    kap_rss_url = "https://www.kap.org.tr/tr/api/disseminor/rss/announcements/all"
+def check_rss_feeds():
+    # KAP'ın yanına alternatifi de ekledik ki Telegram'ı test edebilelim
+    rss_urls = {
+        "KAP BİLDİRİMİ": "https://www.kap.org.tr/tr/api/disseminor/rss/announcements/all",
+        "EKONOMİ HABERİ": "https://bigpara.hurriyet.com.tr/rss/"
+    }
     
-    print("KAP RSS akışı okunuyor...")
-    feed = feedparser.parse(kap_rss_url)
-    
-    # Eğer akış boşsa veya hata varsa
-    if not feed.entries:
-        print("KAP'tan veri alınamadı veya şu an yeni bildirim yok.")
-        return
+    for source_name, url in rss_urls.items():
+        print(f"🔄 {source_name} akışı okunuyor: {url}")
+        feed = feedparser.parse(url)
+        
+        if not feed.entries:
+            print(f"⚠️ {source_name} akışından veri alınamadı veya şu an boş.")
+            continue
 
-    # En son yayınlanan son 3 bildirimi alalım (Test amaçlı)
-    latest_entries = feed.entries[:3]
-    
-    for entry in reversed(latest_entries): # Eskiden yeniye doğru sıralı göndermek için
-        title = entry.title
-        link = entry.link
+        # Son 2 haberi çekelim
+        latest_entries = feed.entries[:2]
         
-        # Telegram için mesaj formatı oluşturma
-        message = f"📢 *KAP BİLDİRİMİ*\n\n{title}\n\n🔗 [Detaylar için tıklayın]({link})"
-        
-        print(f"Gönderiliyor: {title}")
-        send_telegram_message(message)
+        for entry in reversed(latest_entries):
+            title = entry.title
+            link = entry.link
+            
+            message = f"📢 *{source_name}*\n\n{title}\n\n🔗 [Detaylar için tıklayın]({link})"
+            
+            print(f"🚀 Telegram'a gönderiliyor: {title}")
+            send_telegram_message(message)
 
 if __name__ == "__main__":
-    check_kap()
+    check_rss_feeds()
