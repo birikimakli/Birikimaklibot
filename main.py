@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 
 # === TELEGRAM BİLGİLERİNİZİ BURAYA YAZIN ===
 TELEGRAM_TOKEN = "8664828342:AAFF12YTKx4S2qhV2Y1bmMhHJaeIPyOPhjk"
-TELEGRAM_CHAT_ID = "CHAT_ID_BURAYA"
+TELEGRAM_CHAT_ID = "-1003911661321"
 
 # === TAKİP ETMEK İSTEDİĞİNİZ ANAHTAR KELİMELER ===
 # Haber başlığında bu kelimelerden biri geçiyorsa haber filtrenize takılır.
