@@ -10,37 +10,40 @@ def send_telegram_message(text):
     payload = {
         "chat_id": CHAT_ID,
         "text": text,
-        "parse_mode": "Markdown"
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": False
     }
     response = requests.post(url, data={k: v for k, v in payload.items() if v is not None})
     return response.text
 
 def check_rss_feeds():
-    # KAP'ın yanına alternatifi de ekledik ki Telegram'ı test edebilelim
+    # Sunucu engeline takılmayan, kesin veri dönen küresel ve yerel ekonomi akışları
     rss_urls = {
-        "KAP BİLDİRİMİ": "https://www.kap.org.tr/tr/api/disseminor/rss/announcements/all",
-        "EKONOMİ HABERİ": "https://bigpara.hurriyet.com.tr/rss/"
+        "CNBC EKONOMİ (Global)": "https://search.cnbc.com/rs/search/all/view.rss?partnerId=2443&keywords=economy",
+        "DÜNYA GAZETESİ (Ekonomi)": "https://www.dunya.com/rss",
+        "BBC TÜRKÇE (Ekonomi)": "https://feeds.bbci.co.uk/turkce/rss.xml"
     }
     
     for source_name, url in rss_urls.items():
-        print(f"🔄 {source_name} akışı okunuyor: {url}")
+        print(f"🔄 {source_name} akışı okunuyor...")
         feed = feedparser.parse(url)
         
         if not feed.entries:
-            print(f"⚠️ {source_name} akışından veri alınamadı veya şu an boş.")
+            print(f"⚠️ {source_name} şu an boş döndü, diğerine geçiliyor.")
             continue
 
-        # Son 2 haberi çekelim
-        latest_entries = feed.entries[:2]
+        print(f"✅ {source_name} başarılı! Son haberler gönderiliyor...")
         
-        for entry in reversed(latest_entries):
-            title = entry.title
-            link = entry.link
-            
-            message = f"📢 *{source_name}*\n\n{title}\n\n🔗 [Detaylar için tıklayın]({link})"
-            
-            print(f"🚀 Telegram'a gönderiliyor: {title}")
-            send_telegram_message(message)
+        # Test için her kararlı akıştan son 1 haberi çekelim
+        latest_entry = feed.entries[0]
+        title = latest_entry.title
+        link = latest_entry.link
+        
+        message = f"📢 *{source_name}*\n\n{title}\n\n🔗 [Detaylar için tıklayın]({link})"
+        
+        print(f"🚀 Telegram'a gönderiliyor: {title}")
+        send_telegram_message(message)
+        break # En az bir tanesinden haber gönderdiysek testi başarıyla bitirelim
 
 if __name__ == "__main__":
     check_rss_feeds()
